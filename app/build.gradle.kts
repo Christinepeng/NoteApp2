@@ -64,16 +64,21 @@ dependencies {
     implementation(libs.androidx.material3)
 
     // Jetpack Compose
-    implementation (libs.ui)
-    implementation (libs.material3)
-    implementation (libs.ui.tooling.preview)
-    debugImplementation (libs.ui.tooling)
-    implementation (libs.androidx.activity.compose.v172)
-    implementation (libs.androidx.lifecycle.runtime.compose)
+    implementation (libs.androidx.ui.v143)
+    implementation (libs.androidx.material3.v111)
+    implementation (libs.androidx.ui.tooling.preview.v143)
+    debugImplementation (libs.androidx.ui.tooling.v143)
+    implementation (libs.androidx.activity.compose.v191)
+    implementation (libs.androidx.lifecycle.runtime.compose.v261)
 
     // MVVM
     implementation (libs.androidx.lifecycle.viewmodel.ktx)
     implementation (libs.androidx.lifecycle.runtime.ktx.v261)
+
+    // Room dependencies
+    implementation (libs.androidx.room.runtime)
+    kapt ("androidx.room:room-compiler:2.6.1")
+    implementation (libs.androidx.room.ktx)
 
     // Hilt
     implementation (libs.hilt.android)
