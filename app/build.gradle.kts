@@ -60,12 +60,17 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    // Jetpack Compose
     implementation (libs.ui)
     implementation (libs.material3)
     implementation (libs.ui.tooling.preview)
     debugImplementation (libs.ui.tooling)
     implementation (libs.androidx.activity.compose.v172)
     implementation (libs.androidx.lifecycle.runtime.compose)
+
+    // MVVM
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation (libs.androidx.lifecycle.runtime.ktx.v261)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
