@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -88,6 +89,9 @@ fun NoteApp(viewModel: NoteViewModel) {
         composable("add_new_item_screen") {
             AddNewItemScreen(navController, viewModel)
         }
+        composable("item_detail_screen") {
+            ItemDetailScreen(navController, viewModel)
+        }
     }
 }
 
@@ -101,7 +105,7 @@ fun NoteListScreen(navController: NavController, viewModel: NoteViewModel) {
                 .padding(20.dp)
         ) {
             items(itemsList) { item ->
-                ListItem(item)
+                ListItem(navController, item)
             }
         }
 
@@ -121,10 +125,13 @@ fun NoteListScreen(navController: NavController, viewModel: NoteViewModel) {
 }
 
 @Composable
-fun ListItem(item: String) {
+fun ListItem(navController: NavController, item: String) {
     Card(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .clickable {
+                navController.navigate("item_detail_screen")
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -192,7 +199,7 @@ fun AddNewItemScreen(navController: NavController, viewModel: NoteViewModel) {
 }
 
 @Composable
-fun ItemDetailScreen(viewModel: NoteViewModel = viewModel()) {
+fun ItemDetailScreen(navController: NavController, viewModel: NoteViewModel = viewModel()) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
@@ -233,6 +240,7 @@ fun ItemDetailScreen(viewModel: NoteViewModel = viewModel()) {
                                 description = description
                             )
                         )
+                        navController.popBackStack()
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -248,6 +256,7 @@ fun ItemDetailScreen(viewModel: NoteViewModel = viewModel()) {
                                 description = description
                             )
                         )
+                        navController.popBackStack()
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -280,6 +289,6 @@ fun AddNewItemScreenPreView() {
 @Composable
 fun ItemDetailScreenPreview() {
     NoteApp2Theme {
-        ItemDetailScreen(viewModel = viewModel())
+        ItemDetailScreen(navController = rememberNavController(), viewModel = viewModel())
     }
 }
