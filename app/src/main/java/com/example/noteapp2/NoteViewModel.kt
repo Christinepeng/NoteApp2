@@ -32,4 +32,11 @@ class NoteViewModel (private val repository: NoteRepository): ViewModel() {
             loadNotes()
         }
     }
+
+    fun getNoteById(noteId: Int, onNoteFetched: (Note) -> Unit) {
+        viewModelScope.launch {
+            val note = repository.getNoteById(noteId)
+            onNoteFetched(note)
+        }
+    }
 }

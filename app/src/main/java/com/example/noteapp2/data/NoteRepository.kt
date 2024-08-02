@@ -4,4 +4,5 @@ class NoteRepository(private val noteDao: NoteDao) {
     suspend fun insert(note: Note) = noteDao.insert(note)
     suspend fun getAllNotes() = noteDao.getAllNotes()
     suspend fun delete(note: Note) = noteDao.delete(note)
+    suspend fun getNoteById(noteId: Int) = noteDao.getNoteById(noteId)
 }

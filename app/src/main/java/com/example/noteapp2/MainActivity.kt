@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,8 +90,9 @@ fun NoteApp(viewModel: NoteViewModel) {
         composable("add_new_item_screen") {
             AddNewItemScreen(navController, viewModel)
         }
-        composable("item_detail_screen") {
-            ItemDetailScreen(navController, viewModel)
+        composable("item_detail_screen/{noteId}") { backStackEntry ->
+            val noteId = backStackEntry.arguments?.getString("noteId")?.toInt() ?: 0
+            ItemDetailScreen(navController, noteId, viewModel)
         }
     }
 }
@@ -98,14 +100,18 @@ fun NoteApp(viewModel: NoteViewModel) {
 @Composable
 fun NoteListScreen(navController: NavController, viewModel: NoteViewModel) {
     Box(modifier = Modifier.fillMaxSize()) {
-        val itemsList = Array(20) { "" }
+        val itemsList = viewModel.notes
+        viewModel.loadNotes()
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(20.dp)
         ) {
+
             items(itemsList) { item ->
-                ListItem(navController, item)
+
+                ListItem(navController, item, item.id)
             }
         }
 
@@ -125,20 +131,20 @@ fun NoteListScreen(navController: NavController, viewModel: NoteViewModel) {
 }
 
 @Composable
-fun ListItem(navController: NavController, item: String) {
+fun ListItem(navController: NavController, item: Note, noteId: Int) {
     Card(
         modifier = Modifier
             .fillMaxSize()
             .clickable {
-                navController.navigate("item_detail_screen")
+                navController.navigate("item_detail_screen/$noteId")
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.padding(10.dp)
         ) {
-            Text(text = "title")
-            Text(text = "description")
+            Text(text = item.title)
+            Text(text = item.description)
             Spacer(modifier = Modifier.height(30.dp))
 
         }
@@ -186,7 +192,7 @@ fun AddNewItemScreen(navController: NavController, viewModel: NoteViewModel) {
                     )
                     title = ""
                     description = ""
-                    navController.popBackStack()
+                    navController.navigate("note_list_screen")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -199,73 +205,75 @@ fun AddNewItemScreen(navController: NavController, viewModel: NoteViewModel) {
 }
 
 @Composable
-fun ItemDetailScreen(navController: NavController, viewModel: NoteViewModel = viewModel()) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+fun ItemDetailScreen(
+    navController: NavController,
+    noteId: Int,
+    viewModel: NoteViewModel = viewModel()
+) {
+    var note by remember { mutableStateOf<Note?>(null) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
-
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Text(text = "Title", modifier = Modifier.padding(15.dp))
+    LaunchedEffect(noteId) {
+        viewModel.getNoteById(noteId) {
+            note = it
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        Card(
+    }
+    note?.let {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .height(50.dp)
-        ) {
-            Text(text = "Description", modifier = Modifier.padding(15.dp))
-        }
+                .fillMaxSize()
+                .padding(20.dp)
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp)
         ) {
-            Row {
-                Button(
-                    onClick = {
-                        viewModel.addNotes(
-                            Note(
-                                title = title,
-                                description = description
-                            )
-                        )
-                        navController.popBackStack()
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    Text(text = "Edit")
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Button(
-                    onClick = {
-                        viewModel.deleteNotes(
-                            Note(
-                                title = title,
-                                description = description
-                            )
-                        )
-                        navController.popBackStack()
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    Text(text = "Delete")
-                }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text(text = it.title, modifier = Modifier.padding(15.dp))
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .height(50.dp)
+            ) {
+                Text(text = it.description, modifier = Modifier.padding(15.dp))
             }
 
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp)
+            ) {
+                Row {
+                    Button(
+                        onClick = {
+                            viewModel.addNotes(it)
+                            navController.navigate("add_new_item_screen")
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        Text(text = "Edit")
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Button(
+                        onClick = {
+                            viewModel.deleteNotes(it)
+                            navController.popBackStack()
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
+                        Text(text = "Delete")
+                    }
+                }
+
+            }
         }
+    } ?: run {
+        Text(text = "Loading...", modifier = Modifier.fillMaxSize())
     }
 }
 
@@ -285,10 +293,10 @@ fun AddNewItemScreenPreView() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ItemDetailScreenPreview() {
-    NoteApp2Theme {
-        ItemDetailScreen(navController = rememberNavController(), viewModel = viewModel())
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ItemDetailScreenPreview() {
+//    NoteApp2Theme {
+//        ItemDetailScreen(navController = rememberNavController(), viewModel = viewModel())
+//    }
+//}
