@@ -80,6 +80,9 @@ dependencies {
     kapt ("androidx.room:room-compiler:2.6.1")
     implementation (libs.androidx.room.ktx)
 
+    // Navigation
+    implementation (libs.androidx.navigation.compose)
+
     // Hilt
     implementation (libs.hilt.android)
     kapt (libs.hilt.compiler)

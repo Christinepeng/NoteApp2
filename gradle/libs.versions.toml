@@ -17,6 +17,7 @@ composeBom = "2023.08.00"
 lifecycleRuntimeKtxVersion = "2.6.1"
 material3 = "1.2.1"
 material3Version = "1.1.1"
+navigationCompose = "2.7.7"
 roomKtx = "2.6.1"
 roomRuntime = "2.6.1"
 ui = "1.6.8"
@@ -36,6 +37,7 @@ androidx-lifecycle-runtime-compose-v261 = { module = "androidx.lifecycle:lifecyc
 androidx-lifecycle-runtime-ktx-v261 = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
 androidx-material3-v111 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-ui-tooling-preview-v143 = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreviewVersion" }
