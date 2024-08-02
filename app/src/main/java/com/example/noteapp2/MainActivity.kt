@@ -37,6 +37,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.noteapp2.data.Note
 import com.example.noteapp2.data.NoteDatabase
 import com.example.noteapp2.data.NoteRepository
@@ -68,7 +72,15 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NoteApp(viewModel)
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "note_list_screen") {
+                        composable("note_list_screen") {
+                            NoteListScreen(navController, viewModel)
+                        }
+                        composable("add_new_item_screen") {
+                            AddNewItemScreen(navController, viewModel)
+                        }
+                    }
                 }
             }
         }
@@ -77,12 +89,19 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun NoteApp(viewModel: NoteViewModel) {
-//    AddNewItemScreen()
-    NoteListScreen(viewModel)
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "note_list_screen") {
+        composable("note_list_screen") {
+            NoteListScreen(navController, viewModel)
+        }
+        composable("add_new_item_screen") {
+            AddNewItemScreen(navController, viewModel)
+        }
+    }
 }
 
 @Composable
-fun NoteListScreen(viewModel: NoteViewModel) {
+fun NoteListScreen(navController: NavController, viewModel: NoteViewModel) {
     Box(modifier = Modifier.fillMaxSize()) {
         val itemsList = Array(20) { "" }
         LazyColumn(
@@ -96,7 +115,9 @@ fun NoteListScreen(viewModel: NoteViewModel) {
         }
 
         FloatingActionButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                navController.navigate("add_new_item_screen")
+            },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(25.dp)
@@ -128,7 +149,7 @@ fun ListItem(item: String) {
 }
 
 @Composable
-fun AddNewItemScreen(viewModel: NoteViewModel) {
+fun AddNewItemScreen(navController: NavController, viewModel: NoteViewModel) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
@@ -161,12 +182,13 @@ fun AddNewItemScreen(viewModel: NoteViewModel) {
                 onClick = {
                     viewModel.addNotes(
                         Note(
-                        title = title,
-                        description = description
-                    )
+                            title = title,
+                            description = description
+                        )
                     )
                     title = ""
                     description = ""
+                    navController.popBackStack()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -213,10 +235,14 @@ fun ItemDetailScreen(viewModel: NoteViewModel = viewModel()) {
         ) {
             Row {
                 Button(
-                    onClick = { viewModel.addNotes(Note(
-                        title = title,
-                        description = description
-                    ))},
+                    onClick = {
+                        viewModel.addNotes(
+                            Note(
+                                title = title,
+                                description = description
+                            )
+                        )
+                    },
                     modifier = Modifier
                         .weight(1f)
                 ) {
@@ -224,12 +250,14 @@ fun ItemDetailScreen(viewModel: NoteViewModel = viewModel()) {
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 Button(
-                    onClick = { viewModel.deleteNotes(
-                        Note(
-                            title = title,
-                            description = description
+                    onClick = {
+                        viewModel.deleteNotes(
+                            Note(
+                                title = title,
+                                description = description
+                            )
                         )
-                    )},
+                    },
                     modifier = Modifier
                         .weight(1f)
                 ) {
@@ -253,7 +281,7 @@ fun GreetingPreview() {
 @Composable
 fun AddNewItemScreenPreView() {
     NoteApp2Theme {
-        AddNewItemScreen(viewModel = viewModel())
+        AddNewItemScreen(navController = rememberNavController(), viewModel = viewModel())
     }
 }
 

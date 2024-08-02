@@ -64,7 +64,7 @@ dependencies {
     implementation(libs.androidx.material3)
 
     // Jetpack Compose
-    implementation (libs.androidx.ui.v143)
+    implementation (libs.androidx.ui.v150)
     implementation (libs.androidx.material3.v111)
     implementation (libs.androidx.ui.tooling.preview.v143)
     debugImplementation (libs.androidx.ui.tooling.v143)
@@ -82,6 +82,7 @@ dependencies {
 
     // Navigation
     implementation (libs.androidx.navigation.compose)
+
 
     // Hilt
     implementation (libs.hilt.android)
