@@ -67,20 +67,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             NoteApp2Theme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "note_list_screen") {
-                        composable("note_list_screen") {
-                            NoteListScreen(navController, viewModel)
-                        }
-                        composable("add_new_item_screen") {
-                            AddNewItemScreen(navController, viewModel)
-                        }
-                    }
+                    NoteApp(viewModel)
                 }
             }
         }
