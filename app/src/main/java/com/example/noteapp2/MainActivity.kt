@@ -94,6 +94,10 @@ fun NoteApp(viewModel: NoteViewModel) {
             val noteId = backStackEntry.arguments?.getString("noteId")?.toInt() ?: 0
             ItemDetailScreen(navController, noteId, viewModel)
         }
+        composable("edit_item_screen/{noteId}") {backStackEntry ->
+            val noteId = backStackEntry.arguments?.getString("noteId")?.toInt() ?: 0
+            EditItemScreen(navController, noteId, viewModel)
+        }
     }
 }
 
@@ -205,6 +209,72 @@ fun AddNewItemScreen(navController: NavController, viewModel: NoteViewModel) {
 }
 
 @Composable
+fun EditItemScreen(navController: NavController, noteId: Int, viewModel: NoteViewModel) {
+    var note by remember { mutableStateOf<Note?>(null) }
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+
+    LaunchedEffect(noteId) {
+        viewModel.getNoteById(noteId) {fetchedNote ->
+            note = fetchedNote
+            fetchedNote.let {
+                title = it.title
+                description = it.description
+            }
+
+        }
+    }
+    note?.let {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+
+    ) {
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Enter Title") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Enter Description") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp)
+        ) {
+            Button(
+                onClick = {
+                    viewModel.addNotes(
+                        Note(
+                            id = it.id,
+                            title = title,
+                            description = description
+                        )
+                    )
+                    title = ""
+                    description = ""
+                    navController.navigate("note_list_screen")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter)
+            ) {
+                Text(text = "Save")
+            }
+        }
+    }}
+}
+
+@Composable
 fun ItemDetailScreen(
     navController: NavController,
     noteId: Int,
@@ -250,7 +320,7 @@ fun ItemDetailScreen(
                     Button(
                         onClick = {
                             viewModel.addNotes(it)
-                            navController.navigate("add_new_item_screen")
+                            navController.navigate("edit_item_screen/$noteId")
                         },
                         modifier = Modifier
                             .weight(1f)
